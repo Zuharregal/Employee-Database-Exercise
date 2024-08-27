@@ -1,0 +1,66 @@
+ZUHAR REGAL
+4227160
+EXERCISE 1 
+IFS354
+
+QUESTION 1 )
+
+SET SERVEROUTPUT ON 
+
+SET VERIFY OFF
+
+DECLARE
+    -- Declaring variables for employee details,taken from the specific tables
+    v_employee_id hr.employees.employee_id%type; 
+    v_first_name hr.employees.first_name%type; 
+    v_last_name hr.employees.last_name%type; 
+    v_job_title hr.jobs.job_title%type;
+    v_department_name hr.departments.department_name%type;
+    v_street_address hr.locations.street_address%type;
+    v_city hr.locations.city%type; 
+
+BEGIN
+    -- Prompting user for employee ID
+    v_employee_id := &employee_id;
+
+    -- Retrieving employee details along with job,department and location details
+    -- Selecting details using joins to reduce redundancy,based on foreign and primary keys
+
+    SELECT e.first_name, e.last_name, j.job_title, d.department_name, l.street_address, l.city
+    INTO v_first_name, v_last_name, v_job_title, v_department_name, v_street_address, v_city
+    FROM hr.employees e
+    JOIN hr.jobs j ON e.job_id = j.job_id
+    JOIN hr.departments d ON e.department_id = d.department_id
+    JOIN hr.locations l ON d.location_id = l.location_id
+    WHERE e.employee_id = v_employee_id; 
+
+    -- Displaying the employee information in readable format
+    dbms_output.put_line(v_first_name || ' ' || v_last_name || ' is employed as a ' || v_job_title || ' in the ' || v_department_name || ' department which is located at ' || v_street_address || ' in ' || v_city);
+
+EXCEPTION
+    -- Display exception when employee id entered is not found in the database
+    WHEN NO_DATA_FOUND THEN
+        dbms_output.put_line('Employee ID ' || v_employee_id || ' is not found.');
+    WHEN OTHERS THEN
+        dbms_output.put_line('An error occurred: ' || SQLERRM);
+END;
+
+
+QUESTION 2 )
+
+SET SERVEROUTPUT ON
+
+DECLARE
+   -- Declare cursor named product_cursor
+   CURSOR product_cursor IS
+   SELECT Product_Name, Product_Price FROM ECOMM.Products;
+
+BEGIN
+   -- Loop through the products,for each iteration, i represents a row fetched from the cursor 
+   FOR i IN product_cursor LOOP
+
+   -- Display the product name and price for each row.
+   DBMS_OUTPUT.PUT_LINE('Product Name: ' || i.product_name || ', Price: $' || i.product_price);
+   END LOOP;
+
+END;
